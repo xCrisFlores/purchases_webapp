@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { purchasesSlice } from "./purchaseSlice";
+import purchaseReducer from "./purchaseSlice";
 
 export const store = configureStore({
-    reducer: {purchase: purchasesSlice}
+    reducer: {purchase: purchaseReducer}
 });

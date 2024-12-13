@@ -1,58 +1,56 @@
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 import { putPurchase } from "../api/purchasesApi";
+import { useDispatch, useSelector } from "react-redux";
+import { setAmount, setDate } from "../redux/selectedPurchaseSlice";
+import { useNavigate } from "react-router-dom";
 
 export const Edit_purchase = () => {
-
-    const location = useLocation();
-    const [amount, setAmount] = useState("");
-    const [date, setDate] = useState("");
-    const { purchase, userId } = location.state || {};
-    console.log(purchase);
-
+    const purchase = useSelector((state) => state.selectedPurchase); 
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
+   
+    const formattedDate = new Date(purchase.date).toISOString().split('T')[0]; 
+
+    // Editar la compra
     const editPurchase = async () => {
-      
         const data = {
-            _id: purchase,
-            amount: amount,
-            date: date,
-            buyer: userId
+            _id: purchase._id,
+            amount: purchase.amount,
+            date: purchase.date,
+            buyer: purchase.buyer,
         };
 
         try {
-           
-            console.log(data)
+            console.log(data);
             const response = await putPurchase(data);
         
             if (response) {
-                navigate("/dashboard", { state: { userId: userId } });
+                navigate("/dashboard"); 
             } else {
-               
-                console.log("Error: No se pudo iniciar sesión.");
+                console.log("Error: No se pudo realizar la edición.");
             }
         } catch (error) {
-            console.error("Error en la solicitud de login:", error);
+            console.error("Error en la solicitud:", error);
         }
     };
 
     return (
         <div>
-            <p>Agregar compra</p>
+            <p>Editar compra</p>
             <p>Cargo</p>
             <input 
                 type="number" 
-                value={amount} 
-                onChange={(e) => setAmount(e.target.value)}
+                value={purchase.amount} 
+                onChange={(e) => dispatch(setAmount(e.target.value))}
             />
             <p>Fecha</p>
             <input 
                 type="date" 
-                value={date} 
-                onChange={(e) => setDate(e.target.value)} 
+                value={formattedDate} 
+                onChange={(e) => dispatch(setDate(new Date(e.target.value).getTime()))} 
             />
-            <button onClick={editPurchase}>agregar</button> 
+            <button onClick={editPurchase}>Guardar cambios</button> 
         </div>
     );
 };

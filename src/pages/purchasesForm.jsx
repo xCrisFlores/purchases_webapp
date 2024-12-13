@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { createPurchase } from "../api/purchasesApi";
+import { useSelector } from "react-redux";
 
 export const Purchases_form = () => {
 
     const location = useLocation();
     const [amount, setAmount] = useState("");
     const [date, setDate] = useState("");
-    const { userId } = location.state || {};
-    console.log(userId);
+    const userId = useSelector((state) => state.user.userId);
+    console.log(userId)
 
     const navigate = useNavigate();
 
@@ -26,7 +27,7 @@ export const Purchases_form = () => {
             const response = await createPurchase(data);
         
             if (response) {
-                navigate("/dashboard", { state: { userId: userId } });
+                navigate("/dashboard");
             } else {
                
                 console.log("Error: No se pudo iniciar sesión.");

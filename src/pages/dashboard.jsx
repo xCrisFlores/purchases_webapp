@@ -3,20 +3,22 @@ import { useEffect } from 'react';
 import { deletePurchaseApi, getPurchases } from '../api/purchasesApi';
 import { useDispatch, useSelector } from 'react-redux';
 import { setPurchases } from '../redux/purchaseSlice';
+import { selectPurchase } from '../redux/selectedPurchaseSlice';
 
 export const Dashboard = () => {
   const purchases = useSelector((state) => state.purchase.purchases);
   const dispatch = useDispatch();
-  const location = useLocation();
   const navigate = useNavigate();
-  const { userId } = location.state;
+  const userId = useSelector((state) => state.user.userId);
+  console.log(userId)
 
   const goToForm = () => {
-    navigate('/purchasesForm', { state: { userId } });
+    navigate('/purchasesForm');
   };
 
-  const editPurchase = (_id) => {
-    navigate('/editPurchase', { state: { purchase: _id, userId } });
+  const editPurchase = (purchase) => {
+    dispatch(selectPurchase(purchase));
+    navigate('/editPurchase');
   };
 
   const deletePurchase = async (_id) => {
@@ -43,15 +45,15 @@ export const Dashboard = () => {
   }, [userId, dispatch]);
 
   return (
-    <div>
-      <p>Purchases</p>
+    <div className='space-y-10 space-x-10'>
+      <p className="text-8xl">Purchases</p>
       {purchases.length > 0 ? (
         purchases.map((purchase) => (
-          <div key={purchase._id}>
-            <p>Amount: {purchase.amount}</p>
-            <p>Date: {new Date(purchase.date).toLocaleDateString()}</p>
-            <button onClick={() => editPurchase(purchase._id)}>Edit</button>
-            <button onClick={() => deletePurchase(purchase._id)}>Delete</button>
+          <div className="bg-gray-700 text-white rounded-2xl p-7 shadow-lg hover:shadow-xl space-y-4 space-x-2 size-80" key={purchase._id}>
+            <p className="text-3xl">Amount: {purchase.amount}</p>
+            <p className="text-3xl">Date: {new Date(purchase.date).toLocaleDateString()}</p>
+            <button className="text-2xl rounded-xl" onClick={() => editPurchase(purchase)}>Edit</button>
+            <button className="text-2xl rounded-xl" onClick={() => deletePurchase(purchase._id)}>Delete</button>
           </div>
         ))
       ) : (
@@ -60,7 +62,7 @@ export const Dashboard = () => {
         </div>
       )}
       <div>
-        <button onClick={goToForm}>Add purchase</button>
+        <button className="text-2xl rounded-xl" onClick={goToForm}>Add purchase</button>
       </div>
     </div>
   );
